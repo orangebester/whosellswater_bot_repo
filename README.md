@@ -1,2 +1,2 @@
 # whosellswater_bot
-tg bot defining water saleswoman depending on date
+tg-bot defining which seller sells water depending on today or exact date
