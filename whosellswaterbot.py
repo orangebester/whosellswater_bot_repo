@@ -5,9 +5,9 @@ bot = telebot.TeleBot('1270195113:AAF5Ez7-56YoMlyZ-7Twgyl9LKE4CUhmtU4')
 @bot.message_handler(content_types=['text'])
 
 def command_func(message):
-    base_point = datetime.date(2020, 10, 27)
-    base_date(message)
     if message.text == "/start":
+        global base_point
+        base_point = datetime.date(2020, 10, 27)
         bot.send_message(message.chat.id, "Привет!!!\nЭто бот, который определяет продавца воды\n\nЧтобы начать воспользуйтесь кнопками или командами \n\nСписок доступных команд можно вызвать с помощью /help")
         butt_message_command(message)
     elif message.text == "/help":  
@@ -19,16 +19,12 @@ def command_func(message):
         msg = bot.send_message(message.chat.id, "Введите дату нужного дня в формате:\n\n*01 01 1999*", parse_mode='MarkdownV2')
         bot.register_next_step_handler(msg, date_func)
         butt_message_command(message)
+    elif message.text == "/change":
+        base_point = base_point + datetime.timedelta(days=1)
+        butt_message_command(message)
     else:
         bot.send_message(message.from_user.id, "Не понимаю вас, воспользуйтесь кнопками или командами из /help")
-
-
-def base_date(message):
-    base_point = datetime.date(2020, 10, 27)
-    if message.text == "/change":
-        base_point = base_point + datetime.timedelta(days=1)
-  
-
+ 
 
 def butt_message_command(message):
         keyboard = types.InlineKeyboardMarkup()
@@ -55,22 +51,18 @@ def butt_message_button(call):
 
 
 def callback_worker(call):
+    global base_point
     if call.data == "today":
         day_calculator_but(datetime.datetime.now().date(), call)
         butt_message_button(call)
     elif call.data == 'date':
         msg = bot.send_message(call.message.chat.id, "Введите дату нужного дня в формате:\n\n*01 01 1999*", parse_mode='MarkdownV2')
         bot.register_next_step_handler(msg, date_func)
-    base_date_button(call)
+    elif call.data == "change":
+        base_point = base_point + datetime.timedelta(days=1)
+        butt_message_button(call)
     bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id)
 
-
-def base_date_button(call):
-    base_point = datetime.date(2020, 10, 27)
-    if call.data == "change":
-        base_point = base_point + datetime.timedelta(days=1)
-    else:
-        base_point = datetime.date(2020, 10, 27)
 
 
 def date_func(message):
@@ -80,8 +72,6 @@ def date_func(message):
 
 
 def day_calculator(input_point, message):
-    base_point = datetime.date(2020, 10, 27)
-    base_date(message)
     if base_point >= input_point:
         while input_point < base_point:
             input_point = input_point + datetime.timedelta(days=2)
@@ -100,8 +90,6 @@ def day_calculator(input_point, message):
 
 
 def day_calculator_but(input_point, call):
-    
-    base_date_button(call)
     if base_point >= input_point:
         while input_point < base_point:
             input_point = input_point + datetime.timedelta(days=2)
